@@ -1,0 +1,28 @@
+name: FNO Movers
+
+# Sirf manual run (Actions tab -> FNO Movers -> Run workflow)
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "0 = live (9:20 se 9:50 tak har 5 min), 1 = test (abhi ek alert)"
+        type: choice
+        default: "0"
+        options:
+          - "0"
+          - "1"
+
+jobs:
+  movers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run FNO Movers
+        env:
+          UPSTOX_TOKEN: ${{ secrets.UPSTOX_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MODE: ${{ github.event.inputs.mode }}
+        run: python3 fno_movers.py

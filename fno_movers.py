@@ -37,6 +37,8 @@ QUOTE_URL = "https://api.upstox.com/v2/market-quote/quotes"
 # --------------------------------------------------------------------
 
 IST = timezone(timedelta(hours=5, minutes=30))
+UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
 UPSTOX_TOKEN = os.environ.get("UPSTOX_TOKEN", "").strip()
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
@@ -56,7 +58,9 @@ def http(url, headers=None, data=None, tries=3, timeout=30):
     last = None
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers=headers or {}, data=data)
+            hdrs = {"User-Agent": UA}
+            hdrs.update(headers or {})
+            req = urllib.request.Request(url, headers=hdrs, data=data)
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return r.read()
         except urllib.error.HTTPError as e:

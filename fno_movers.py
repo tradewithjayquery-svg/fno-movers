@@ -245,6 +245,15 @@ def main():
         run_once(now().strftime("%H:%M") + " (TEST)", key_to_sym, missing_note)
         return
 
+    try:
+        send_telegram(
+            f"✅ <b>FNO MOVERS started</b>  |  {now().strftime('%H:%M')} IST\n"
+            f"Watchlist: {len(key_to_sym)} stocks\n"
+            f"Pehla update {SLOTS[0]} par, aakhri {SLOTS[-1]} par (har 5 min)."
+        )
+    except Exception as e:
+        log(f"Start message fail: {e}")
+
     sent = 0
     for s in SLOTS:
         t = slot_dt(s)
@@ -261,6 +270,12 @@ def main():
                 send_telegram(f"⚠️ FNO MOVERS {s}: update fail hua\n{html.escape(str(e)[:200])}")
             except Exception as e2:
                 log(f"Error alert bhi fail: {e2}")
+
+    if sent > 0:
+        try:
+            send_telegram(f"🏁 <b>FNO MOVERS</b> complete: {sent} updates bheje gaye.")
+        except Exception as e:
+            log(f"End message fail: {e}")
 
     if sent == 0:
         log("Koi alert nahi gaya (late start ya errors)")
